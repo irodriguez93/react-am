@@ -3,8 +3,9 @@ class IndecisionApp extends React.Component {
     super(props);
     this.handleDeleteOptions = this.handleDeleteOptions.bind(this);
     this.handlePick = this.handlePick.bind(this);
+    this.handleAddOption = this.handleAddOption.bind(this);
     this.state = {
-      options: ["thing one", "things two", "thing four"]
+      options: props.options
     };
   }
   handleDeleteOptions() {
@@ -15,7 +16,20 @@ class IndecisionApp extends React.Component {
     });
   }
   handlePick() {
-    alert("test");
+    const randomNum = Math.floor(Math.random() * this.state.options.length);
+    alert(this.state.options[randomNum]);
+  }
+  handleAddOption(option) {
+    if (!option) {
+      return "Enter Valid Value to add item";
+    } else if (this.state.options.indexOf(option) > -1) {
+      return "Item is already in your list";
+    }
+    this.setState(prevState => {
+      return {
+        options: prevState.options.concat([option])
+      };
+    });
   }
   render() {
     const title = "Indecision";
@@ -32,64 +46,74 @@ class IndecisionApp extends React.Component {
           handleDeleteOptions={this.handleDeleteOptions}
           options={this.state.options}
         />
-        <AddOption />
+        <AddOption handleAddOption={this.handleAddOption} />
       </div>
     );
   }
 }
 
-class Header extends React.Component {
-  render() {
-    console.log(this.props.title);
-    return (
-      <div>
-        <h1>{this.props.title}</h1>
-        <h2>{this.props.subtitle}</h2>
-      </div>
-    );
-  }
-}
+IndecisionApp.defaultProps = {
+  options: []
+};
 
-class Action extends React.Component {
-  render() {
-    return (
-      <div>
-        <button
-          disabled={!this.props.hasOptions}
-          onClick={this.props.handlePick}
-        >
-          What should I do?
-        </button>
-      </div>
-    );
-  }
-}
+const Header = props => {
+  return (
+    <div>
+      <h1>{props.title}</h1>
+      <h2>{props.subtitle}</h2>
+    </div>
+  );
+};
 
-class Options extends React.Component {
-  render() {
-    return (
-      <div>
-        <button onClick={this.props.handleDeleteOptions}> Remove All </button>
-        {this.props.options.map(option => (
-          <Option key={option} optionText={option}></Option>
-        ))}
-      </div>
-    );
-  }
-}
+Header.defaultProps = {
+  title: "Indecision"
+};
+
+const Action = props => {
+  return (
+    <div>
+      <button disabled={!props.hasOptions} onClick={props.handlePick}>
+        What should I do?
+      </button>
+    </div>
+  );
+};
+
+const Options = props => {
+  return (
+    <div>
+      <button onClick={props.handleDeleteOptions}> Remove All </button>
+      {props.options.map(option => (
+        <Option key={option} optionText={option}></Option>
+      ))}
+    </div>
+  );
+};
 
 class AddOption extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleAddOption = this.handleAddOption.bind(this);
+    this.state = {
+      error: undefined
+    };
+  }
   handleAddOption(e) {
     e.preventDefault();
     const option = e.target.elements.option.value.trim();
 
-    if (option) {
-      alert(option);
-    }
+    const error = this.props.handleAddOption(option);
+    this.setState(() => {
+      return {
+        error: error
+      };
+    });
   }
+
   render() {
     return (
       <div>
+        {this.state.error && <p>{this.state.error}</p>}
         <form onSubmit={this.handleAddOption}>
           <input type="text" name="option"></input>
           <button>Add Option</button>
@@ -99,11 +123,20 @@ class AddOption extends React.Component {
   }
 }
 
-class Option extends React.Component {
-  render() {
-    return <div> {this.props.optionText}</div>;
-  }
-}
+const Option = props => {
+  return <div> {props.optionText}</div>;
+};
+
+// const User = props => {
+//   return (
+//     <div>
+//       <p>Name: {props.name}</p>
+//       <p>Age: {props.age}</p>
+//     </div>
+//   );
+// };
+// <User name="Irving" age="26"></User>,
+
 ReactDOM.render(
   <IndecisionApp></IndecisionApp>,
   document.getElementById("app")
