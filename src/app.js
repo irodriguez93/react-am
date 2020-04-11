@@ -9,11 +9,7 @@ class IndecisionApp extends React.Component {
     };
   }
   handleDeleteOptions() {
-    this.setState(() => {
-      return {
-        options: []
-      };
-    });
+    this.setState(() => ({ options: [] }));
   }
   handlePick() {
     const randomNum = Math.floor(Math.random() * this.state.options.length);
@@ -25,11 +21,9 @@ class IndecisionApp extends React.Component {
     } else if (this.state.options.indexOf(option) > -1) {
       return "Item is already in your list";
     }
-    this.setState(prevState => {
-      return {
-        options: prevState.options.concat([option])
-      };
-    });
+    this.setState(prevState => ({
+      options: prevState.options.concat([option]) //I didn't change to option because you can concat 2 arrays or a number i chose to keep the array
+    }));
   }
   render() {
     const title = "Indecision";
@@ -103,11 +97,7 @@ class AddOption extends React.Component {
     const option = e.target.elements.option.value.trim();
 
     const error = this.props.handleAddOption(option);
-    this.setState(() => {
-      return {
-        error: error
-      };
-    });
+    this.setState(() => ({ error: error }));
   }
 
   render() {
